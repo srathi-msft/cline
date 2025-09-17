@@ -34,7 +34,7 @@ const ApiConfigurationSection = ({ renderSectionHeader }: ApiConfigurationSectio
 									opacity: 1,
 									cursor: "pointer",
 								}}>
-								Plan Mode
+								Information Mode
 							</TabButton>
 							<TabButton
 								disabled={currentTab === "act"}
@@ -44,7 +44,7 @@ const ApiConfigurationSection = ({ renderSectionHeader }: ApiConfigurationSectio
 									opacity: 1,
 									cursor: "pointer",
 								}}>
-								Act Mode
+								Workflow Mode
 							</TabButton>
 						</div>
 
@@ -77,11 +77,12 @@ const ApiConfigurationSection = ({ renderSectionHeader }: ApiConfigurationSectio
 								console.error("Failed to update separate models setting:", error)
 							}
 						}}>
-						Use different models for Plan and Act modes
+						Use different models for Information and Workflow modes
 					</VSCodeCheckbox>
 					<p className="text-xs mt-[5px] text-[var(--vscode-descriptionForeground)]">
-						Switching between Plan and Act mode will persist the API and model used in the previous mode. This may be
-						helpful e.g. when using a strong reasoning model to architect a plan for a cheaper coding model to act on.
+						Switching between Information and Workflow mode will persist the API and model used in the previous mode.
+						This may be helpful e.g. when using a strong reasoning model to gather information for a cheaper coding
+						model to execute the workflow.
 					</p>
 				</div>
 			</Section>

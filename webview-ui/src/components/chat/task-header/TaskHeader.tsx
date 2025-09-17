@@ -16,7 +16,6 @@ import { validateSlashCommand } from "@/utils/slash-commands"
 import CopyTaskButton from "./buttons/CopyTaskButton"
 import DeleteTaskButton from "./buttons/DeleteTaskButton"
 import OpenDiskTaskHistoryButton from "./buttons/OpenDiskTaskHistoryButton"
-import TaskTimeline from "./TaskTimeline"
 
 const IS_DEV = process.env.IS_DEV
 
@@ -425,111 +424,56 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 										gap: "4px",
 										flexWrap: "wrap",
 									}}>
-									<div style={{ display: "flex", alignItems: "center" }}>
-										<span style={{ fontWeight: "bold" }}>Tokens:</span>
-									</div>
-									<HeroTooltip content="Prompt Tokens">
-										<span className="flex items-center gap-[3px] cursor-pointer">
-											<i
-												className="codicon codicon-arrow-up"
-												style={{
-													fontSize: "12px",
-													fontWeight: "bold",
-													marginBottom: "-2px",
-												}}
-											/>
-											{formatLargeNumber(tokensIn || 0)}
-										</span>
-									</HeroTooltip>
-									<HeroTooltip content="Completion Tokens">
-										<span className="flex items-center gap-[3px] cursor-pointer">
-											<i
-												className="codicon codicon-arrow-down"
-												style={{
-													fontSize: "12px",
-													fontWeight: "bold",
-													marginBottom: "-2px",
-												}}
-											/>
-											{formatLargeNumber(tokensOut || 0)}
-										</span>
-									</HeroTooltip>
+									{(() => {
+										const todoInfo = parseCurrentTodoInfo(lastProgressMessageText || "")
+										if (todoInfo?.hasItems) {
+											const progressPercentage = Math.round(
+												(todoInfo.completedCount / todoInfo.totalCount) * 100,
+											)
+											return (
+												<>
+													<div style={{ display: "flex", alignItems: "center" }}>
+														<span style={{ fontWeight: "bold" }}>Progress:</span>
+													</div>
+													<div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+														<div
+															style={{
+																width: "100px",
+																height: "8px",
+																backgroundColor: "var(--vscode-progressBar-background)",
+																borderRadius: "4px",
+																overflow: "hidden",
+															}}>
+															<div
+																style={{
+																	width: `${progressPercentage}%`,
+																	height: "100%",
+																	backgroundColor: "var(--vscode-progressBar-foreground)",
+																	transition: "width 0.3s ease",
+																}}
+															/>
+														</div>
+														<span style={{ fontSize: "12px" }}>
+															{todoInfo.completedCount}/{todoInfo.totalCount} ({progressPercentage}
+															%)
+														</span>
+													</div>
+												</>
+											)
+										}
+										return (
+											<div style={{ display: "flex", alignItems: "center" }}>
+												<span style={{ fontWeight: "bold" }}>Task in progress...</span>
+											</div>
+										)
+									})()}
 								</div>
-								{!shouldShowPromptCacheInfo() && (
-									<div className="flex items-center flex-wrap">
-										{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
-										<CopyTaskButton taskText={task.text} />
-										<DeleteTaskButton
-											taskId={currentTaskItem?.id}
-											taskSize={formatSize(currentTaskItem?.size)}
-										/>
-									</div>
-								)}
-							</div>
-							{shouldShowPromptCacheInfo() && (
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-										flexWrap: "wrap",
-									}}>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "4px",
-											flexWrap: "wrap",
-										}}>
-										<div style={{ display: "flex", alignItems: "center" }}>
-											<span style={{ fontWeight: "bold" }}>Cache:</span>
-										</div>
-										{cacheWrites !== undefined && cacheWrites > 0 && (
-											<HeroTooltip content="Tokens written to cache">
-												<span className="flex items-center gap-[3px] cursor-pointer">
-													<i
-														className="codicon codicon-database"
-														style={{
-															fontSize: "12px",
-															fontWeight: "bold",
-															marginBottom: "-1px",
-														}}
-													/>
-													+{formatLargeNumber(cacheWrites || 0)}
-												</span>
-											</HeroTooltip>
-										)}
-										{cacheReads !== undefined && cacheReads > 0 && (
-											<HeroTooltip content="Tokens read from cache">
-												<span className="flex items-center gap-[3px] cursor-pointer">
-													<i
-														className={"codicon codicon-arrow-right"}
-														style={{
-															fontSize: "12px",
-															fontWeight: "bold",
-															marginBottom: 0,
-														}}
-													/>
-													{formatLargeNumber(cacheReads || 0)}
-												</span>
-											</HeroTooltip>
-										)}
-									</div>
-									<div className="flex items-center flex-wrap">
-										{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
-										<CopyTaskButton taskText={task.text} />
-										<DeleteTaskButton
-											taskId={currentTaskItem?.id}
-											taskSize={formatSize(currentTaskItem?.size)}
-										/>
-									</div>
+								<div className="flex items-center flex-wrap">
+									{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
+									<CopyTaskButton taskText={task.text} />
+									<DeleteTaskButton taskId={currentTaskItem?.id} taskSize={formatSize(currentTaskItem?.size)} />
 								</div>
-							)}
-							<div className="flex flex-col">
-								<TaskTimeline messages={clineMessages} onBlockClick={onScrollToMessage} />
-								{ContextWindowComponent}
 							</div>
-
 							{/* Current Todo Item Display */}
 							{(() => {
 								const todoInfo = parseCurrentTodoInfo(lastProgressMessageText || "")
