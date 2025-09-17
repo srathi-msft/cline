@@ -94,8 +94,8 @@ interface GitCommit {
 	description: string
 }
 
-const PLAN_MODE_COLOR = "var(--vscode-activityWarningBadge-background)"
-const ACT_MODE_COLOR = "var(--vscode-focusBorder)"
+const INFORMATION_MODE_COLOR = "var(--vscode-activityWarningBadge-background)"
+const WORKFLOW_MODE_COLOR = "var(--vscode-focusBorder)"
 
 const SwitchOption = styled.div.withConfig({
 	shouldForwardProp: (prop) => !["isActive"].includes(prop),
@@ -129,14 +129,14 @@ const SwitchContainer = styled.div<{ disabled: boolean }>`
 `
 
 const Slider = styled.div.withConfig({
-	shouldForwardProp: (prop) => !["isAct", "isPlan"].includes(prop),
-})<{ isAct: boolean; isPlan?: boolean }>`
+	shouldForwardProp: (prop) => !["isWorkflow", "isInformation"].includes(prop),
+})<{ isWorkflow: boolean; isInformation?: boolean }>`
 	position: absolute;
 	height: 100%;
 	width: 50%;
-	background-color: ${(props) => (props.isPlan ? PLAN_MODE_COLOR : ACT_MODE_COLOR)};
+	background-color: ${(props) => (props.isInformation ? INFORMATION_MODE_COLOR : WORKFLOW_MODE_COLOR)};
 	transition: transform 0.2s ease;
-	transform: translateX(${(props) => (props.isAct ? "100%" : "0%")});
+	transform: translateX(${(props) => (props.isWorkflow ? "100%" : "0%")});
 `
 
 const ButtonGroup = styled.div`
@@ -1627,7 +1627,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								isDraggingOver && !showUnsupportedFileError // Only show drag outline if not showing error
 									? "2px dashed var(--vscode-focusBorder)"
 									: isTextAreaFocused
-										? `1px solid ${mode === "plan" ? PLAN_MODE_COLOR : "var(--vscode-focusBorder)"}`
+										? `1px solid ${mode === "plan" ? INFORMATION_MODE_COLOR : "var(--vscode-focusBorder)"}`
 										: "none",
 							outlineOffset: isDraggingOver && !showUnsupportedFileError ? "1px" : "0px", // Add offset for drag-over outline
 						}}
@@ -1791,17 +1791,17 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 					<Tooltip
 						hintText={`Toggle w/ ${togglePlanActKeys}`}
 						style={{ zIndex: 1000 }}
-						tipText={`In ${shownTooltipMode === "act" ? "Act" : "Plan"}  mode, Cline will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
+						tipText={`In ${shownTooltipMode === "act" ? "Workflow" : "Information"}  mode, Cline will ${shownTooltipMode === "act" ? "complete the task immediately" : "gather information to architect a plan"}`}
 						visible={shownTooltipMode !== null}>
 						<SwitchContainer data-testid="mode-switch" disabled={false} onClick={onModeToggle}>
-							<Slider isAct={mode === "act"} isPlan={mode === "plan"} />
+							<Slider isInformation={mode === "plan"} isWorkflow={mode === "act"} />
 							<SwitchOption
 								aria-checked={mode === "plan"}
 								isActive={mode === "plan"}
 								onMouseLeave={() => setShownTooltipMode(null)}
 								onMouseOver={() => setShownTooltipMode("plan")}
 								role="switch">
-								Plan
+								Information
 							</SwitchOption>
 							<SwitchOption
 								aria-checked={mode === "act"}
@@ -1809,7 +1809,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								onMouseLeave={() => setShownTooltipMode(null)}
 								onMouseOver={() => setShownTooltipMode("act")}
 								role="switch">
-								Act
+								Workflow
 							</SwitchOption>
 						</SwitchContainer>
 					</Tooltip>

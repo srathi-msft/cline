@@ -10,7 +10,6 @@ import { normalizeApiConfiguration } from "@/components/settings/utils/providerU
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { useShowNavbar } from "@/context/PlatformContext"
 import { FileServiceClient, UiServiceClient } from "@/services/grpc-client"
-import { Navbar } from "../menu/Navbar"
 import AutoApproveBar from "./auto-approve-menu/AutoApproveBar"
 // Import utilities and hooks from the new structure
 import {
@@ -334,7 +333,8 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 	return (
 		<ChatLayout isHidden={isHidden}>
 			<div className="flex flex-col flex-1 overflow-hidden">
-				{showNavbar && <Navbar />}
+				{/* Navbar disabled for ChatGPT-style sidebar layout */}
+				{/* {showNavbar && <Navbar />} */}
 				{task ? (
 					<TaskSection
 						apiMetrics={apiMetrics}

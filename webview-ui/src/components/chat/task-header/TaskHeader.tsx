@@ -411,120 +411,91 @@ const TaskHeader: React.FC<TaskHeaderProps> = ({
 								flexDirection: "column",
 								gap: "2px",
 							}}>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									flexWrap: "wrap",
-								}}>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "4px",
-										flexWrap: "wrap",
-									}}>
-									<div style={{ display: "flex", alignItems: "center" }}>
-										<span style={{ fontWeight: "bold" }}>Tokens:</span>
-									</div>
-									<HeroTooltip content="Prompt Tokens">
-										<span className="flex items-center gap-[3px] cursor-pointer">
-											<i
-												className="codicon codicon-arrow-up"
+							{/* Task Progress Section */}
+							{(() => {
+								const todoInfo = parseCurrentTodoInfo(lastProgressMessageText || "")
+
+								if (todoInfo?.hasItems) {
+									const progressPercentage = Math.round((todoInfo.completedCount / todoInfo.totalCount) * 100)
+
+									return (
+										<div
+											style={{
+												display: "flex",
+												justifyContent: "space-between",
+												alignItems: "center",
+												flexWrap: "wrap",
+												marginBottom: "8px",
+											}}>
+											<div
 												style={{
-													fontSize: "12px",
-													fontWeight: "bold",
-													marginBottom: "-2px",
-												}}
-											/>
-											{formatLargeNumber(tokensIn || 0)}
-										</span>
-									</HeroTooltip>
-									<HeroTooltip content="Completion Tokens">
-										<span className="flex items-center gap-[3px] cursor-pointer">
-											<i
-												className="codicon codicon-arrow-down"
-												style={{
-													fontSize: "12px",
-													fontWeight: "bold",
-													marginBottom: "-2px",
-												}}
-											/>
-											{formatLargeNumber(tokensOut || 0)}
-										</span>
-									</HeroTooltip>
-								</div>
-								{!shouldShowPromptCacheInfo() && (
-									<div className="flex items-center flex-wrap">
-										{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
-										<CopyTaskButton taskText={task.text} />
-										<DeleteTaskButton
-											taskId={currentTaskItem?.id}
-											taskSize={formatSize(currentTaskItem?.size)}
-										/>
-									</div>
-								)}
-							</div>
-							{shouldShowPromptCacheInfo() && (
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-										flexWrap: "wrap",
-									}}>
+													display: "flex",
+													alignItems: "center",
+													gap: "8px",
+													flex: 1,
+													minWidth: "200px",
+												}}>
+												<div style={{ display: "flex", alignItems: "center" }}>
+													<span style={{ fontWeight: "bold" }}>Progress:</span>
+												</div>
+												<div style={{ flex: 1, minWidth: "100px" }}>
+													<div
+														style={{
+															width: "100%",
+															height: "6px",
+															backgroundColor: "var(--vscode-progressBar-background)",
+															borderRadius: "3px",
+															overflow: "hidden",
+														}}>
+														<div
+															style={{
+																width: `${progressPercentage}%`,
+																height: "100%",
+																backgroundColor: "var(--vscode-progressBar-foreground)",
+																transition: "width 0.3s ease",
+															}}
+														/>
+													</div>
+												</div>
+												<span style={{ fontSize: "12px", color: "var(--vscode-descriptionForeground)" }}>
+													{todoInfo.completedCount}/{todoInfo.totalCount} ({progressPercentage}%)
+												</span>
+											</div>
+											<div className="flex items-center flex-wrap">
+												{IS_DEV === '"true"' && (
+													<OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />
+												)}
+												<CopyTaskButton taskText={task.text} />
+												<DeleteTaskButton
+													taskId={currentTaskItem?.id}
+													taskSize={formatSize(currentTaskItem?.size)}
+												/>
+											</div>
+										</div>
+									)
+								}
+
+								// Fallback when no todo items - show action buttons only
+								return (
 									<div
 										style={{
 											display: "flex",
+											justifyContent: "flex-end",
 											alignItems: "center",
-											gap: "4px",
 											flexWrap: "wrap",
+											marginBottom: "8px",
 										}}>
-										<div style={{ display: "flex", alignItems: "center" }}>
-											<span style={{ fontWeight: "bold" }}>Cache:</span>
+										<div className="flex items-center flex-wrap">
+											{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
+											<CopyTaskButton taskText={task.text} />
+											<DeleteTaskButton
+												taskId={currentTaskItem?.id}
+												taskSize={formatSize(currentTaskItem?.size)}
+											/>
 										</div>
-										{cacheWrites !== undefined && cacheWrites > 0 && (
-											<HeroTooltip content="Tokens written to cache">
-												<span className="flex items-center gap-[3px] cursor-pointer">
-													<i
-														className="codicon codicon-database"
-														style={{
-															fontSize: "12px",
-															fontWeight: "bold",
-															marginBottom: "-1px",
-														}}
-													/>
-													+{formatLargeNumber(cacheWrites || 0)}
-												</span>
-											</HeroTooltip>
-										)}
-										{cacheReads !== undefined && cacheReads > 0 && (
-											<HeroTooltip content="Tokens read from cache">
-												<span className="flex items-center gap-[3px] cursor-pointer">
-													<i
-														className={"codicon codicon-arrow-right"}
-														style={{
-															fontSize: "12px",
-															fontWeight: "bold",
-															marginBottom: 0,
-														}}
-													/>
-													{formatLargeNumber(cacheReads || 0)}
-												</span>
-											</HeroTooltip>
-										)}
 									</div>
-									<div className="flex items-center flex-wrap">
-										{IS_DEV === '"true"' && <OpenDiskTaskHistoryButton taskId={currentTaskItem?.id} />}
-										<CopyTaskButton taskText={task.text} />
-										<DeleteTaskButton
-											taskId={currentTaskItem?.id}
-											taskSize={formatSize(currentTaskItem?.size)}
-										/>
-									</div>
-								</div>
-							)}
+								)
+							})()}
 							<div className="flex flex-col">
 								<TaskTimeline messages={clineMessages} onBlockClick={onScrollToMessage} />
 								{ContextWindowComponent}

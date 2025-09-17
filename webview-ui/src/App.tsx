@@ -1,6 +1,7 @@
 import type { Boolean, EmptyRequest } from "@shared/proto/cline/common"
 import { useEffect } from "react"
 import AccountView from "./components/account/AccountView"
+import ChatSidebar from "./components/chat/ChatSidebar"
 import ChatView from "./components/chat/ChatView"
 import HistoryView from "./components/history/HistoryView"
 import McpView from "./components/mcp/configuration/McpConfigurationView"
@@ -58,25 +59,30 @@ const AppContent = () => {
 	}
 
 	return (
-		<div className="flex h-screen w-full flex-col">
-			{showSettings && <SettingsView onDone={hideSettings} />}
-			{showHistory && <HistoryView onDone={hideHistory} />}
-			{showMcp && <McpView initialTab={mcpTab} onDone={closeMcpView} />}
-			{showAccount && (
-				<AccountView
-					activeOrganization={activeOrganization}
-					clineUser={clineUser}
-					onDone={hideAccount}
-					organizations={organizations}
+		<div className="flex h-screen w-full">
+			{/* Only show sidebar when not in welcome or modal views */}
+			{!showWelcome && !showSettings && !showHistory && !showMcp && !showAccount && <ChatSidebar />}
+
+			<div className="flex flex-col flex-1">
+				{showSettings && <SettingsView onDone={hideSettings} />}
+				{showHistory && <HistoryView onDone={hideHistory} />}
+				{showMcp && <McpView initialTab={mcpTab} onDone={closeMcpView} />}
+				{showAccount && (
+					<AccountView
+						activeOrganization={activeOrganization}
+						clineUser={clineUser}
+						onDone={hideAccount}
+						organizations={organizations}
+					/>
+				)}
+				{/* Do not conditionally load ChatView, it's expensive and there's state we don't want to lose (user input, disableInput, askResponse promise, etc.) */}
+				<ChatView
+					hideAnnouncement={hideAnnouncement}
+					isHidden={showSettings || showHistory || showMcp || showAccount}
+					showAnnouncement={showAnnouncement}
+					showHistoryView={navigateToHistory}
 				/>
-			)}
-			{/* Do not conditionally load ChatView, it's expensive and there's state we don't want to lose (user input, disableInput, askResponse promise, etc.) */}
-			<ChatView
-				hideAnnouncement={hideAnnouncement}
-				isHidden={showSettings || showHistory || showMcp || showAccount}
-				showAnnouncement={showAnnouncement}
-				showHistoryView={navigateToHistory}
-			/>
+			</div>
 		</div>
 	)
 }
